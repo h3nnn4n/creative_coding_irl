@@ -116,7 +116,9 @@ class GCODE:
         self.pen_up()
 
     def draw_boundaries(self):
+        self.pen_down()
         self.square(XMIN, YMIN, XMAX, YMAX)
+        self.pen_up()
 
     def flush(self):
         self.f.flush()
