@@ -1,2 +1,6 @@
 .ipynb_checkpoints
 *.gcode
+*.png
+*.jpg
+*.pyc
+__pycache__
