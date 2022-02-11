@@ -2,7 +2,7 @@
 
 import numpy as np
 
-from .constants import PEN_DELAY, START_X, START_Y, XMAX, XMIN, YMAX, YMIN
+from .constants import PEN_DELAY, START_X, START_Y, XMAX, XMIN, YMAX, YMIN, XMID, YMID
 from .utils import clamp
 
 
