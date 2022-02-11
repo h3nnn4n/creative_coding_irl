@@ -67,8 +67,6 @@ class GCODE:
         self.f.write(f"G0 X{x} Y{y} F{feedrate}\n")
 
     def square_filled(self, xmin, ymin, xmax, ymax, dy=1, zigzag=True):
-        #         print(f"square filled centered on {(xmin + xmax) / 2.0:.2f} {(ymin + ymax) / 2.0:.2f}")
-
         self.pen_up()
         self.move_to((xmin + xmax) / 2.0, (ymin + ymax) / 2.0)
 
