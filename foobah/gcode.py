@@ -100,7 +100,6 @@ class GCODE:
         self.pen_up()
 
     def square(self, xmin, ymin, xmax, ymax):
-        return
         self.move_to(xmin, ymin)
         self.pen_down()
         self.move_to(xmax, ymin)
