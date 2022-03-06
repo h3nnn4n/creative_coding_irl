@@ -6,7 +6,7 @@ authors = ["h3nnn4n <uber.renan@gmail.com>"]
 license = "MIT"
 
 [tool.poetry.dependencies]
-python = "^3.8"
+python = ">=3.8,<3.11"
 jupyter = "^1.0.0"
 numpy = "^1.22.2"
 pycairo = "^1.20.1"
@@ -16,6 +16,7 @@ matplotlib = "^3.5.1"
 notebook = "^6.4.8"
 ipykernel = "^6.9.0"
 jupyterlab = "^3.2.9"
+scipy = "^1.8.0"
 
 [tool.poetry.dev-dependencies]
 
