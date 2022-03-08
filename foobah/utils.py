@@ -2,6 +2,8 @@ from io import BytesIO
 
 import cairo
 import IPython.display
+import PIL
+import PIL.Image
 
 from .constants import START_X, START_Y, XMAX, XMIN, YMAX, YMIN
 
@@ -53,6 +55,13 @@ def preview(basename):
         surface.write_to_png("preview.png")
 
 
+def preview_png(basename):
+    preview(basename)
+
+    image = PIL.Image.open("preview.png")
+    return IPython.display.display(data=image)
+
+
 def preview_svg(basename):
     filename = f"{basename}.gcode"
     svgio = BytesIO()
@@ -64,9 +73,7 @@ def preview_svg(basename):
     width = 210 * 2
     height = 297 * 2
 
-    with cairo.SVGSurface(svgio, width, height) as surface, open(
-        filename
-    ) as f:
+    with cairo.SVGSurface(svgio, width, height) as surface, open(filename) as f:
         context = cairo.Context(surface)
         context.scale(width, height)
         context.set_line_width(0.00125)
@@ -93,6 +100,5 @@ def preview_svg(basename):
                     writing = False
                 elif tokens[1] == "S90":
                     writing = True
-
 
     return IPython.display.SVG(data=svgio.getvalue())
