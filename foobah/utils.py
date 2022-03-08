@@ -12,15 +12,15 @@ def clamp(value, min_value, max_value):
     return min(max(value, min_value), max_value)
 
 
-def preview(basename):
+def preview(basename, scale=1):
     filename = f"{basename}.gcode"
     writing = False
 
     last_x = (START_X - XMIN) / (XMAX - XMIN)
     last_y = (START_Y - YMIN) / (YMAX - YMIN)
 
-    width = 210 * 2
-    height = 297 * 2
+    width = 210 * scale
+    height = 297 * scale
 
     with cairo.ImageSurface(cairo.FORMAT_ARGB32, width, height) as surface, open(
         filename
@@ -55,11 +55,11 @@ def preview(basename):
         surface.write_to_png("preview.png")
 
 
-def preview_png(basename):
-    preview(basename)
+def preview_png(basename, scale=1):
+    preview(basename, scale=scale)
 
     image = PIL.Image.open("preview.png")
-    return IPython.display.display(data=image)
+    return IPython.display.display(image)
 
 
 def preview_svg(basename):
