@@ -7,11 +7,14 @@ from .utils import clamp
 
 
 class GCODE:
-    def __init__(self, name="foobar", feedrate=1000):
+    def __init__(self, name="foobar", feedrate=1000, travel_feedrate=None, line_feedrate=None):
         self.start_pos = np.array([START_X, START_Y])
         self.pos = np.array([START_X, START_Y])
         self.f = open(f"{name}.gcode", "wt")
         self.feedrate = feedrate
+
+        self.travel_feedrate = travel_feedrate or feedrate
+        self.line_feedrate = line_feedrate or feedrate
 
         self.servo = "P0"
         self.pen_up_pos = "S0"
@@ -60,6 +63,14 @@ class GCODE:
         self.pos[1] = y
 
         self.f.write(f"G0 X{x} Y{y} F{feedrate}\n")
+
+    def line_to(self, x, y, feedrate=None):
+        self.pen_down()
+        self.move_to(x, y, feedrate=feedrate or self.line_feedrate)
+
+    def travel_to(self, x, y, feedrate=None):
+        self.pen_up()
+        self.move_to(x, y, feedrate=feedrate or self.travel_feedrate)
 
     def move_to_mid_point(self, feedrate=None):
         self.move_to(XMID, YMID, feedrate=feedrate)
