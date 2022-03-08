@@ -1,13 +1,22 @@
 #!/usr/bin/env python
 
+import math
+
 import numpy as np
 
-from .constants import PEN_DELAY, START_X, START_Y, XMAX, XMIN, YMAX, YMIN, XMID, YMID
-from .utils import clamp
+from .constants import PEN_DELAY, START_X, START_Y, XMAX, XMID, XMIN, YMAX, YMID, YMIN
+from .utils import clamp, dist
 
 
 class GCODE:
-    def __init__(self, name="foobar", feedrate=1000, travel_feedrate=None, line_feedrate=None):
+    def __init__(
+        self,
+        name="foobar",
+        feedrate=1000,
+        travel_feedrate=None,
+        line_feedrate=None,
+        max_line_length=10,
+    ):
         self.start_pos = np.array([START_X, START_Y])
         self.pos = np.array([START_X, START_Y])
         self.f = open(f"{name}.gcode", "wt")
@@ -19,6 +28,8 @@ class GCODE:
         self.servo = "P0"
         self.pen_up_pos = "S0"
         self.pen_down_pos = "S90"
+
+        self.max_line_length = max_line_length
 
         self._is_pen_up = False
 
@@ -66,7 +77,27 @@ class GCODE:
 
     def line_to(self, x, y, feedrate=None):
         self.pen_down()
-        self.move_to(x, y, feedrate=feedrate or self.line_feedrate)
+
+        line_length = dist(self.pos, (x, y))
+
+        if line_length <= self.max_line_length:
+            self.move_to(x, y, feedrate=feedrate or self.line_feedrate)
+            return
+
+        n_steps = int(math.ceil(line_length / self.max_line_length))
+
+        x0 = self.pos[0]
+        y0 = self.pos[1]
+
+        dx = (x - x0) / n_steps
+        dy = (y - y0) / n_steps
+
+        for i in range(n_steps + 1):
+            self.move_to(
+                x0 + dx * i,
+                y0 + dy * i,
+                feedrate=feedrate or self.line_feedrate,
+            )
 
     def travel_to(self, x, y, feedrate=None):
         self.pen_up()
@@ -124,12 +155,11 @@ class GCODE:
         self.pen_up()
 
     def square(self, xmin, ymin, xmax, ymax):
-        self.move_to(xmin, ymin)
-        self.pen_down()
-        self.move_to(xmax, ymin)
-        self.move_to(xmax, ymax)
-        self.move_to(xmin, ymax)
-        self.move_to(xmin, ymin)
+        self.travel_to(xmin, ymin)
+        self.line_to(xmax, ymin)
+        self.line_to(xmax, ymax)
+        self.line_to(xmin, ymax)
+        self.line_to(xmin, ymin)
         self.pen_up()
 
     def line(self, x1, y1, x2, y2):

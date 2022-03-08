@@ -2,6 +2,7 @@ from io import BytesIO
 
 import cairo
 import IPython.display
+import numpy as np
 import PIL
 import PIL.Image
 
@@ -10,6 +11,16 @@ from .constants import START_X, START_Y, XMAX, XMIN, YMAX, YMIN
 
 def clamp(value, min_value, max_value):
     return min(max(value, min_value), max_value)
+
+
+def dist(p1, p2):
+    if isinstance(p1, (list, tuple)):
+        p1 = np.array(p1)
+
+    if isinstance(p2, (list, tuple)):
+        p2 = np.array(p2)
+
+    return np.linalg.norm(p1 - p2)
 
 
 def preview(basename, scale=1):
