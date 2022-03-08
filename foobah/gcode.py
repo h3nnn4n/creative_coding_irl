@@ -17,6 +17,9 @@ class GCODE:
         self.pen_up_pos = "S0"
         self.pen_down_pos = "S90"
 
+        self._start_routine()
+
+    def _start_routine(self):
         self.f.write("M17\n")  # Ensure steppers are enabled
         self.f.write("M121\n")  # Disable endstops, just in case
         self.f.write("G90\n")  # Set absolute positioning
