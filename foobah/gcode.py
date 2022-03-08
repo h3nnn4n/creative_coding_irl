@@ -17,6 +17,8 @@ class GCODE:
         self.pen_up_pos = "S0"
         self.pen_down_pos = "S90"
 
+        self._is_pen_up = False
+
         self._start_routine()
 
     def _start_routine(self):
@@ -28,10 +30,20 @@ class GCODE:
         self.move_to_starting_position()
 
     def pen_up(self):
+        if self._is_pen_up:
+            return
+
+        self._is_pen_up = True
+
         self.finish_moves()
         self.f.write(f"M280 {self.servo} {self.pen_up_pos} T{PEN_DELAY}\n")
 
     def pen_down(self):
+        if not self._is_pen_up:
+            return
+
+        self._is_pen_up = False
+
         self.finish_moves()
         self.f.write(f"M280 {self.servo} {self.pen_down_pos} T{PEN_DELAY}\n")
 
