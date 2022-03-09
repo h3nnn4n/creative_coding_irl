@@ -19,7 +19,7 @@ class GCODE:
         scale=None,
     ):
         self.start_pos = np.array([START_X, START_Y])
-        self.pos = np.array([START_X, START_Y])
+        self.pos = np.array([START_X, START_Y], dtype=np.float64)
         self.f = open(f"{name}.gcode", "wt")
         self.feedrate = feedrate
 
