@@ -16,6 +16,7 @@ class GCODE:
         travel_feedrate=None,
         line_feedrate=None,
         max_line_length=10,
+        scale=None,
     ):
         self.start_pos = np.array([START_X, START_Y])
         self.pos = np.array([START_X, START_Y])
@@ -30,6 +31,7 @@ class GCODE:
         self.pen_down_pos = "S90"
 
         self.max_line_length = max_line_length
+        self.scale = scale
 
         self._is_pen_up = False
 
@@ -64,6 +66,17 @@ class GCODE:
     def finish_moves(self):
         self.f.write("M400\n")
 
+    def scale_coordinate(self, x, y):
+        if not self.scale:
+            return x, y
+
+        xmin, xmax, ymin, ymax = self.scale
+
+        return (
+            ((x - xmin) / (xmax - xmin)) * (XMAX - XMIN) + XMIN,
+            ((y - ymin) / (ymax - ymin)) * (YMAX - YMIN) + YMIN,
+        )
+
     def move_to(self, x, y, feedrate=None):
         line_length = dist(self.pos, (x, y))
 
@@ -88,6 +101,8 @@ class GCODE:
 
     def _move_to(self, x, y, feedrate=None):
         feedrate = feedrate or self.feedrate
+
+        x, y = self.scale(x, y)
 
         x = clamp(x, XMIN, XMAX)
         y = clamp(y, YMIN, YMAX)
