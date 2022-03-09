@@ -65,6 +65,28 @@ class GCODE:
         self.f.write("M400\n")
 
     def move_to(self, x, y, feedrate=None):
+        line_length = dist(self.pos, (x, y))
+
+        if line_length <= self.max_line_length:
+            self._move_to(x, y, feedrate=feedrate or self.line_feedrate)
+            return
+
+        n_steps = int(math.ceil(line_length / self.max_line_length))
+
+        x0 = self.pos[0]
+        y0 = self.pos[1]
+
+        dx = (x - x0) / n_steps
+        dy = (y - y0) / n_steps
+
+        for i in range(n_steps + 1):
+            self._move_to(
+                x0 + dx * i,
+                y0 + dy * i,
+                feedrate=feedrate or self.line_feedrate,
+            )
+
+    def _move_to(self, x, y, feedrate=None):
         feedrate = feedrate or self.feedrate
 
         x = clamp(x, XMIN, XMAX)
