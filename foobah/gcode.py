@@ -104,7 +104,7 @@ class GCODE:
         feedrate = feedrate or self.feedrate
 
         if scale:
-            x, y = self.scale(x, y)
+            x, y = self.scale_coordinate(x, y)
 
         x = clamp(x, XMIN, XMAX)
         y = clamp(y, YMIN, YMAX)
