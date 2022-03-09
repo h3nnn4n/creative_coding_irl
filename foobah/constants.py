@@ -1,8 +1,8 @@
 XMAX = 100
 XMIN = -95
 
-YMAX = 185
-YMIN = -90
+YMAX = 180
+YMIN = -85
 
 XMID = (XMAX + XMIN) / 2.0
 YMID = (YMAX + YMIN) / 2.0
