@@ -77,6 +77,17 @@ class GCODE:
             ((y - ymin) / (ymax - ymin)) * (YMAX - YMIN) + YMIN,
         )
 
+    def scale_coordinate_reverse(self, x, y):
+        if not self.scale:
+            return x, y
+
+        xmin, xmax, ymin, ymax = self.scale
+
+        return (
+            ((x - XMIN) / (XMAX - XMIN)) * (xmax - xmin) + xmin,
+            ((y - YMIN) / (YMAX - YMIN)) * (ymax - ymin) + ymin,
+        )
+
     def move_to(self, x, y, feedrate=None, scale=True):
         line_length = dist(self.pos, (x, y))
 
@@ -86,8 +97,10 @@ class GCODE:
 
         n_steps = int(math.ceil(line_length / self.max_line_length))
 
-        x0 = self.pos[0]
-        y0 = self.pos[1]
+        if scale:
+            x0, y0 = self.scale_coordinate_reverse(*self.pos)
+        else:
+            x0, y0 = self.pos
 
         dx = (x - x0) / n_steps
         dy = (y - y0) / n_steps
