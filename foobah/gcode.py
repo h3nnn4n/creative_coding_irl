@@ -67,7 +67,7 @@ class GCODE:
         self.f.write("M400\n")
 
     def scale_coordinate(self, x, y):
-        if not self.scale:
+        if self.scale is None:
             return x, y
 
         xmin, xmax, ymin, ymax = self.scale
@@ -78,7 +78,7 @@ class GCODE:
         )
 
     def scale_coordinate_reverse(self, x, y):
-        if not self.scale:
+        if self.scale is None:
             return x, y
 
         xmin, xmax, ymin, ymax = self.scale
@@ -97,7 +97,7 @@ class GCODE:
 
         n_steps = int(math.ceil(line_length / self.max_line_length))
 
-        if scale:
+        if scale is not None:
             x0, y0 = self.scale_coordinate_reverse(*self.pos)
         else:
             x0, y0 = self.pos
@@ -116,7 +116,7 @@ class GCODE:
     def _move_to(self, x, y, feedrate=None, scale=True):
         feedrate = feedrate or self.feedrate
 
-        if scale:
+        if scale is not None:
             x, y = self.scale_coordinate(x, y)
 
         x = clamp(x, XMIN, XMAX)
