@@ -77,11 +77,11 @@ class GCODE:
             ((y - ymin) / (ymax - ymin)) * (YMAX - YMIN) + YMIN,
         )
 
-    def move_to(self, x, y, feedrate=None):
+    def move_to(self, x, y, feedrate=None, scale=True):
         line_length = dist(self.pos, (x, y))
 
         if line_length <= self.max_line_length:
-            self._move_to(x, y, feedrate=feedrate or self.line_feedrate)
+            self._move_to(x, y, feedrate=feedrate or self.line_feedrate, scale=scale)
             return
 
         n_steps = int(math.ceil(line_length / self.max_line_length))
@@ -97,12 +97,14 @@ class GCODE:
                 x0 + dx * i,
                 y0 + dy * i,
                 feedrate=feedrate or self.line_feedrate,
+                scale=scale,
             )
 
-    def _move_to(self, x, y, feedrate=None):
+    def _move_to(self, x, y, feedrate=None, scale=True):
         feedrate = feedrate or self.feedrate
 
-        x, y = self.scale(x, y)
+        if scale:
+            x, y = self.scale(x, y)
 
         x = clamp(x, XMIN, XMAX)
         y = clamp(y, YMIN, YMAX)
@@ -141,10 +143,10 @@ class GCODE:
         self.move_to(x, y, feedrate=feedrate or self.travel_feedrate)
 
     def move_to_mid_point(self, feedrate=None):
-        self.move_to(XMID, YMID, feedrate=feedrate)
+        self.move_to(XMID, YMID, feedrate=feedrate, scale=False)
 
     def move_to_starting_position(self, feedrate=None):
-        self.move_to(START_X, START_Y, feedrate=feedrate)
+        self.move_to(START_X, START_Y, feedrate=feedrate, scale=False)
 
     def step(self, dx, dy, feedrate=None):
         feedrate = feedrate or self.feedrate
@@ -208,7 +210,14 @@ class GCODE:
 
     def draw_boundaries(self):
         self.pen_down()
+
+        # Ugly hack to not scale the boundaries
+        _scale = self.scale
+        self.scale = None
+
         self.square(XMIN, YMIN, XMAX, YMAX)
+
+        self.scale = _scale
         self.pen_up()
 
     def flush(self):
