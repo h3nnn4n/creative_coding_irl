@@ -167,7 +167,7 @@ class GCODE:
 
         x = xmin
         y = ymin
-        while y < ymax:
+        while y + dy < ymax:
             y += dy
 
             # When zigzag is true the pen moves in a saw tooth pattern,
