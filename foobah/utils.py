@@ -58,9 +58,9 @@ def preview(basename, scale=1):
 
             if "M280 P0" in line:
                 tokens = line.strip().split(" ")[1:]
-                if tokens[1] == "S0":
+                if tokens[1] == "S90":
                     writing = False
-                elif tokens[1] == "S90":
+                elif tokens[1] == "S0":
                     writing = True
 
         surface.write_to_png("preview.png")
@@ -107,9 +107,9 @@ def preview_svg(basename):
 
             if "M280 P0" in line:
                 tokens = line.strip().split(" ")[1:]
-                if tokens[1] == "S0":
+                if tokens[1] == "S90":
                     writing = False
-                elif tokens[1] == "S90":
+                elif tokens[1] == "S0":
                     writing = True
 
     return IPython.display.SVG(data=svgio.getvalue())
