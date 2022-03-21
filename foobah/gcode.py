@@ -27,8 +27,8 @@ class GCODE:
         self.line_feedrate = line_feedrate or feedrate
 
         self.servo = "P0"
-        self.pen_up_pos = "S0"
-        self.pen_down_pos = "S90"
+        self.pen_up_pos = "S90"
+        self.pen_down_pos = "S0"
 
         self.max_line_length = max_line_length
         self.scale = scale
