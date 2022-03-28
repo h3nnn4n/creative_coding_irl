@@ -1,8 +1,16 @@
-XMIN = -95
-XMAX = 100
+# A2
+XMIN = -230
+XMAX = 240
 
-YMIN = -105
-YMAX = 185
+YMIN = -450
+YMAX = 210
+
+# A4
+# XMIN = -95
+# XMAX = 100
+
+# YMIN = -105
+# YMAX = 185
 
 XMID = (XMAX + XMIN) / 2.0
 YMID = (YMAX + YMIN) / 2.0
