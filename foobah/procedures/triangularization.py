@@ -44,7 +44,7 @@ class Triangularizator:
                 dx = uniform(-step_size / 2, step_size / 2) * self.noise
                 dy = uniform(-step_size / 2, step_size / 2) * self.noise
 
-                if x + dx < xmin or x + dy >= ymax or y + dy < ymin or y + dy >= ymax:
+                if x + dx < xmin or x + dx >= xmax or y + dy < ymin or y + dy >= ymax:
                     continue
 
                 try:

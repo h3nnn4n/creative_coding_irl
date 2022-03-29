@@ -52,7 +52,7 @@ class SquareWaver:
                     intensity = 0
                     sample_count = 0
 
-                    for x_ in range(0, step_size):
+                    for x_ in range(0, step_size - 1):
                         for y_ in range(0, step_size):
                             if x_center + x_ >= xmax or y_center + y_ >= ymax:
                                 continue
