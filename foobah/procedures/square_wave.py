@@ -93,17 +93,19 @@ class SquareWaver:
                     writing = True
 
                 if counter % 2 == 0:
-                    x = x_center + step_size / 2.0
+                    x = x_center + step_size / 2.25
                 else:
-                    x = x_center - step_size / 2.0
+                    x = x_center - step_size / 2.25
 
                 counter += 1
 
                 self.gcode.move_to(x, y)
 
-                y += dy
+                y += dy / 2.0
 
                 self.gcode.move_to(x, y)
+
+                y += dy / 4.0
 
             self.gcode.pen_up()
             writing = False
