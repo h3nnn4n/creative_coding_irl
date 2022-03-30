@@ -18,6 +18,8 @@ ipykernel = "^6.9.0"
 jupyterlab = "^3.2.9"
 scipy = "^1.8.0"
 ortools = "^9.3.10497"
+tqdm = "^4.63.1"
+ipywidgets = "^7.7.0"
 
 [tool.poetry.dev-dependencies]
 ipdb = "^0.13.9"
