@@ -2,7 +2,7 @@ import math
 from ortools.constraint_solver import routing_enums_pb2
 from ortools.constraint_solver import pywrapcp
 
-from random import uniform
+from random import uniform, shuffle
 
 
 class TSPScribble:
@@ -58,6 +58,10 @@ class TSPScribble:
                 if pow(intensity, self.pow_exp) > uniform(0, 1):
                     point_cloud.append((x + dx, y + dy))
 
+        # Shuffle points to remove any bias
+        # having bias can be cool tho
+        shuffle(point_cloud)
+
         return point_cloud
 
 
@@ -69,7 +73,7 @@ def _compute_euclidean_distance_matrix(locations):
             if from_counter == to_counter:
                 distances[from_counter][to_counter] = 0.0
             else:
-                distances[from_counter][to_counter] = float(
+                distances[from_counter][to_counter] = int(
                     math.hypot((from_node[0] - to_node[0]), (from_node[1] - to_node[1]))
                 )
 
@@ -89,7 +93,11 @@ def _solve(model):
         to_node = manager.IndexToNode(to_index)
         # Todo, we can probably make this faster and more memory efective
         # by lazily calculating things and memoizing them as we go
-        return distance_matrix[from_node][to_node]
+        value = distance_matrix[from_node][to_node]
+
+        # print(f"{from_node=} {to_node=} = {value=}")
+
+        return value
 
     transit_callback_index = routing.RegisterTransitCallback(distance_callback)
     routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
@@ -97,6 +105,12 @@ def _solve(model):
     search_parameters.first_solution_strategy = (
         routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
     )
+    # search_parameters.local_search_metaheuristic = (
+    # routing_enums_pb2.LocalSearchMetaheuristic.SIMULATED_ANNEALING
+    # routing_enums_pb2.LocalSearchMetaheuristic.GUIDED_LOCAL_SEARCH
+    # )
+    # search_parameters.time_limit.seconds = 1
+    # search_parameters.log_search = False
 
     solution = routing.SolveWithParameters(search_parameters)
 
@@ -106,11 +120,18 @@ def _solve(model):
 def _build_path(manager, routing, solution):
     path = []
 
+    route_distance = 0
     index = routing.Start(0)
     path.append(index)
     while not routing.IsEnd(index):
+        previous_index = index
         index = solution.Value(routing.NextVar(index))
         path.append(index)
+        # print(previous_index, index)
+        route_distance += routing.GetArcCostForVehicle(previous_index, index, 0)
+
+    # print(f"solution: {solution.ObjectiveValue()}")
+    # print(f"length: {route_distance}")
 
     return path[:-1]
 
