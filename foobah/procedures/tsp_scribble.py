@@ -19,10 +19,19 @@ class TSPScribble:
         xmin, ymin, xmax, ymax = bounds
 
         points = self._get_point_cloud(bounds)
+        if len(points) < 2:
+            return
+
         model = _create_model(points)
         solution = _solve(model)
 
-        print(solution.ObjectiveValue())
+        self.gcode.pen_up()
+        self.gcode.travel_to(*points[solution[1]])
+
+        for index in solution[1:]:
+            self.gcode.line_to(*points[index])
+
+        self.gcode.pen_up()
 
     def _get_point_cloud(self, bounds):
         xmin, ymin, xmax, ymax = bounds
@@ -91,7 +100,19 @@ def _solve(model):
 
     solution = routing.SolveWithParameters(search_parameters)
 
-    return solution
+    return _build_path(manager, routing, solution)
+
+
+def _build_path(manager, routing, solution):
+    path = []
+
+    index = routing.Start(0)
+    path.append(index)
+    while not routing.IsEnd(index):
+        index = solution.Value(routing.NextVar(index))
+        path.append(index)
+
+    return path[:-1]
 
 
 def _create_model(points):
