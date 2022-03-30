@@ -101,7 +101,7 @@ class SquareWaver:
 
                 self.gcode.move_to(x, y)
 
-                y += dy / 2.0
+                y += dy / 2.0 + dy / 4.0
 
                 self.gcode.move_to(x, y)
 
