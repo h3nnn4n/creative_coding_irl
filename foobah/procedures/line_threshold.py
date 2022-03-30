@@ -71,12 +71,7 @@ class LineThreshold:
                 y,
                 bounds,
             )
-            self._line_threshold(
-                x,
-                y,
-                bounds,
-                angle_hack=180
-            )
+            self._line_threshold(x, y, bounds, angle_hack=180)
 
             i += 1
 
@@ -93,12 +88,7 @@ class LineThreshold:
                 y,
                 bounds,
             )
-            self._line_threshold(
-                x,
-                y,
-                bounds,
-                angle_hack=180
-            )
+            self._line_threshold(x, y, bounds, angle_hack=180)
 
             i += 1
 
