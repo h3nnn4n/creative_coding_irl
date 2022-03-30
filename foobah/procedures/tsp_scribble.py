@@ -19,44 +19,10 @@ class TSPScribble:
         xmin, ymin, xmax, ymax = bounds
 
         points = self._get_point_cloud(bounds)
-        model = self._create_model(points)
-        solution = self._solve(model)
+        model = _create_model(points)
+        solution = _solve(model)
 
-        print(solution)
-
-    def _solve(self, model):
-        manager = pywrapcp.RoutingIndexManager(
-            len(model["locations"]), model["num_vehicles"], model["depot"]
-        )
-
-        routing = pywrapcp.RoutingModel(manager)
-        distance_matrix = _compute_euclidean_distance_matrix(model["locations"])
-
-        def distance_callback(from_index, to_index):
-            from_node = manager.IndexToNode(from_index)
-            to_node = manager.IndexToNode(to_index)
-            # Todo, we can probably make this faster and more memory efective
-            # by lazily calculating things and memoizing them as we go
-            return distance_matrix[from_node][to_node]
-
-        transit_callback_index = routing.RegisterTransitCallback(distance_callback)
-        routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
-        search_parameters = pywrapcp.DefaultRoutingSearchParameters()
-        search_parameters.first_solution_strategy = (
-            routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
-        )
-
-        solution = routing.SolveWithParameters(search_parameters)
-
-        return solution
-
-    def _create_model(self, points):
-        model = {}
-        model["locations"] = points
-        model["num_vehicles"] = 1
-        model["depot"] = 0
-
-        return model
+        print(solution.ObjectiveValue())
 
     def _get_point_cloud(self, bounds):
         xmin, ymin, xmax, ymax = bounds
@@ -92,9 +58,46 @@ def _compute_euclidean_distance_matrix(locations):
         distances[from_counter] = {}
         for to_counter, to_node in enumerate(locations):
             if from_counter == to_counter:
-                distances[from_counter][to_counter] = 0
+                distances[from_counter][to_counter] = 0.0
             else:
-                distances[from_counter][to_counter] = int(
+                distances[from_counter][to_counter] = float(
                     math.hypot((from_node[0] - to_node[0]), (from_node[1] - to_node[1]))
                 )
+
     return distances
+
+
+def _solve(model):
+    manager = pywrapcp.RoutingIndexManager(
+        len(model["locations"]), model["num_vehicles"], model["depot"]
+    )
+
+    routing = pywrapcp.RoutingModel(manager)
+    distance_matrix = _compute_euclidean_distance_matrix(model["locations"])
+
+    def distance_callback(from_index, to_index):
+        from_node = manager.IndexToNode(from_index)
+        to_node = manager.IndexToNode(to_index)
+        # Todo, we can probably make this faster and more memory efective
+        # by lazily calculating things and memoizing them as we go
+        return distance_matrix[from_node][to_node]
+
+    transit_callback_index = routing.RegisterTransitCallback(distance_callback)
+    routing.SetArcCostEvaluatorOfAllVehicles(transit_callback_index)
+    search_parameters = pywrapcp.DefaultRoutingSearchParameters()
+    search_parameters.first_solution_strategy = (
+        routing_enums_pb2.FirstSolutionStrategy.PATH_CHEAPEST_ARC
+    )
+
+    solution = routing.SolveWithParameters(search_parameters)
+
+    return solution
+
+
+def _create_model(points):
+    model = {}
+    model["locations"] = points
+    model["num_vehicles"] = 1
+    model["depot"] = 0
+
+    return model
