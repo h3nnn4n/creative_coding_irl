@@ -2,6 +2,39 @@ from math import cos, radians, sin
 from random import uniform
 
 
+class Sonny:
+    def __init__(
+        self, image, gcode, thresholds=None, angles=None, noise=0, step_sizes=None
+    ):
+        self.image = image
+        self.gcode = gcode
+        self.thresholds = thresholds
+        self.step_sizes = step_sizes or [i * 2 + 2 for i in range(len(thresholds))]
+        self.angles = angles or [uniform(0, 360) for _ in range(len(thresholds))]
+        self.noise = noise
+
+        self.pens = [
+            LineThreshold(
+                image=image,
+                gcode=gcode,
+                threshold=threshold,
+                angle=angle,
+                step_size=step_size,
+                noise=noise,
+            )
+            for threshold, angle, step_size in zip(
+                self.thresholds, self.angles, self.step_sizes
+            )
+        ]
+
+    def paint(self, bounds=None):
+        if bounds is None:
+            bounds = (0, 0, self.image.width, self.image.height)
+
+        for pen in self.pens:
+            pen.paint(bounds=bounds)
+
+
 class LineThreshold:
     def __init__(self, image, gcode, threshold=0.5, angle=45, noise=0, step_size=3):
         self.image = image
